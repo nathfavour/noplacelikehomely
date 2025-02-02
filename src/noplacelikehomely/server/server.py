@@ -15,27 +15,26 @@ def index():
     # Redirect root to the UI
     return redirect("/ui")
 
-def get_local_ip():
-    """Robustly determine the local IP address with a fallback."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+def get_all_ips():
+    """Return a list of all IPv4 addresses for the current host."""
+    ips = set()
     try:
-        # Connect to an external host; doesn't actually send data.
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
+        hostname = socket.gethostname()
+        for ip in socket.gethostbyname_ex(hostname)[2]:
+            ips.add(ip)
     except Exception as e:
-        logging.warning("Could not determine local IP, defaulting to 127.0.0.1: %s", e)
-        ip = "127.0.0.1"
-    finally:
-        s.close()
-    return ip
+        logging.warning("Error getting host IPs: %s", e)
+    # Always include localhost
+    ips.add("127.0.0.1")
+    return list(ips)
 
 def run_server(host='0.0.0.0', port=8000):
-    # Use the robust local IP determination
-    local_ip = get_local_ip()
-    url = f"http://{local_ip}:{port}"
-    logging.info("Starting server at %s", url)
-    print("Scan this QR code to access the UI:")
-    qrcode_terminal.draw(url)
+    ips = get_all_ips()
+    urls = [f"http://{ip}:{port}" for ip in ips]
+    for url in urls:
+        logging.info("Server interface available at %s", url)
+        print("Scan this QR code for:", url)
+        qrcode_terminal.draw(url)
     try:
         app.run(host=host, port=port)
     except Exception as e:

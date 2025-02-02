@@ -53,8 +53,8 @@ def home():
                 }
 
                 /* Form elements */
+                .textarea, .upload-area input { width: 100%; }
                 .textarea {
-                    width: 100%;
                     height: 8rem;
                     padding: 0.5rem;
                     border: 1px solid #ddd;
@@ -136,7 +136,7 @@ def home():
                     <div class="card">
                         <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">File Sharing</h3>
                         <div class="upload-area">
-                            <input type="file" id="fileInput" style="display: none;" multiple>
+                            <input type="file" id="fileInput" style="display: none;" multiple onchange="uploadFiles()">
                             <button onclick="document.getElementById('fileInput').click()" 
                                     class="button">
                                 Select Files
@@ -160,16 +160,20 @@ def home():
             <script>
                 // Fetch and display files
                 async function updateFileList() {
-                    const response = await fetch('/api/files');
-                    const data = await response.json();
-                    const fileList = document.getElementById('fileList');
-                    fileList.innerHTML = data.files.map(file => `
-                        <div class="file-item">
-                            <span>${file}</span>
-                            <button onclick="downloadFile('${file}')" 
-                                    class="link-button">Download</button>
-                        </div>
-                    `).join('');
+                    try {
+                        const response = await fetch('/api/files');
+                        const data = await response.json();
+                        const fileList = document.getElementById('fileList');
+                        fileList.innerHTML = data.files.map(file => `
+                            <div class="file-item">
+                                <span>${file}</span>
+                                <button onclick="downloadFile('${file}')" 
+                                        class="link-button">Download</button>
+                            </div>
+                        `).join('');
+                    } catch (error) {
+                        console.error('Error updating file list:', error);
+                    }
                 }
 
                 // Share clipboard content
@@ -185,6 +189,36 @@ def home():
                     } catch (error) {
                         alert('Failed to share clipboard: ' + error.message);
                     }
+                }
+
+                async function uploadFiles() {
+                    const input = document.getElementById('fileInput');
+                    const files = input.files;
+                    if (!files.length) return;
+                    for (let file of files) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        try {
+                            const res = await fetch('/api/files', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const result = await res.json();
+                            if (res.ok) {
+                                console.log('Uploaded:', result.filename);
+                            } else {
+                                alert(result.error || 'Upload failed');
+                            }
+                        } catch (error) {
+                            console.error('Upload error:', error);
+                        }
+                    }
+                    input.value = '';
+                    updateFileList();
+                }
+
+                function downloadFile(filename) {
+                    window.open('/api/files/' + filename, '_blank');
                 }
 
                 // Initialize
