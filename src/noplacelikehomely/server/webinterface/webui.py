@@ -267,22 +267,31 @@ def home():
                     window.open('/api/files/' + filename, '_blank');
                 }
 
-                // Fetch available audio files from /stream/list and display as buttons.
+                // Updated function to list files grouped by streaming directory
                 async function fetchAudioFiles() {
                     try {
                         const res = await fetch('/stream/list');
                         const data = await res.json();
                         const container = document.getElementById('audioFiles');
-                        if (data.files && data.files.length) {
-                            container.innerHTML = data.files.map(file => 
-                                `<div style="margin-bottom:0.5rem;">
-                                    <span>${file}</span>
-                                    <button class="button" onclick="streamAudio('${file}')">Stream</button>
-                                </div>`
-                            ).join('');
-                        } else {
-                            container.innerHTML = '<p>No audio files available.</p>';
+                        let html = '';
+                        // data.files is an object: {folder1: [files], folder2: [files], ...}
+                        for (const [dir, files] of Object.entries(data.files)) {
+                            html += `<h5>Directory: ${dir}</h5>`;
+                            if (files.length) {
+                                html += `<table>
+                                            <tr><th>File</th><th>Action</th></tr>`;
+                                files.forEach(file => {
+                                    html += `<tr>
+                                                <td>${file}</td>
+                                                <td><button class="button" onclick="streamAudio('${file}')">Stream</button></td>
+                                            </tr>`;
+                                });
+                                html += `</table>`;
+                            } else {
+                                html += `<p>No files in this directory.</p>`;
+                            }
                         }
+                        container.innerHTML = html;
                     } catch (error) {
                         console.error('Error fetching audio files:', error);
                     }
