@@ -153,6 +153,13 @@ def home():
                         <div id="serverClipboard" class="textarea" style="overflow:auto; background:#f0f0f0;"></div>
                         <button onclick="fetchServerClipboard()" class="button" style="margin-top:0.5rem;">Fetch Server Clipboard</button>
                     </div>
+
+                    <!-- Audio Streaming Card -->
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Audio Streaming</h3>
+                        <audio id="audioStream" controls style="width:100%;"></audio>
+                        <div id="audioFiles" style="margin-top: 1rem;"></div>
+                    </div>
                 </div>
 
                 <!-- File List -->
@@ -245,8 +252,37 @@ def home():
                     window.open('/api/files/' + filename, '_blank');
                 }
 
+                // Fetch available audio files from /stream/list and display as buttons.
+                async function fetchAudioFiles() {
+                    try {
+                        const res = await fetch('/stream/list');
+                        const data = await res.json();
+                        const container = document.getElementById('audioFiles');
+                        if (data.files && data.files.length) {
+                            container.innerHTML = data.files.map(file => 
+                                `<div style="margin-bottom:0.5rem;">
+                                    <span>${file}</span>
+                                    <button class="button" onclick="streamAudio('${file}')">Stream</button>
+                                </div>`
+                            ).join('');
+                        } else {
+                            container.innerHTML = '<p>No audio files available.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching audio files:', error);
+                    }
+                }
+
+                // Set the audio player source to the streaming endpoint for the selected file.
+                function streamAudio(fileName) {
+                    const audio = document.getElementById('audioStream');
+                    audio.src = '/stream/play?file=' + encodeURIComponent(fileName);
+                    audio.play();
+                }
+
                 // Initialize
                 updateFileList();
+                fetchAudioFiles();
             </script>
         </body>
         </html>

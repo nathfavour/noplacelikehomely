@@ -80,3 +80,11 @@ def stream_audio():
     mime_type = "audio/mpeg" if file_name.lower().endswith(".mp3") else "application/octet-stream"
     return Response(stream_with_context(generate_audio(file_path)),
                     mimetype=mime_type)
+
+@stream_bp.route("/list")
+def list_audio():
+    try:
+        files = [f for f in os.listdir(AUDIO_FOLDER) if os.path.isfile(os.path.join(AUDIO_FOLDER, f))]
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"files": files})
