@@ -24,14 +24,18 @@ def index():
     return redirect("/ui")
 
 def get_all_ips():
-    """Return a list of all IPv4 addresses for the current host."""
+    """Return all IPv4 addresses (including local network ones) for this host."""
     ips = set()
     try:
-        hostname = socket.gethostname()
-        for ip in socket.gethostbyname_ex(hostname)[2]:
-            ips.add(ip)
+        # Retrieve all addresses via getaddrinfo
+        for info in socket.getaddrinfo(socket.gethostname(), None):
+            if info[0] == socket.AF_INET:
+                ip = info[4][0]
+                # Exclude loopback if found; we'll add it manually later
+                if not ip.startswith("127."):
+                    ips.add(ip)
     except Exception as e:
-        logging.warning("Error getting host IPs: %s", e)
+        logging.warning("Error getting interface IPs: %s", e)
     # Always include localhost
     ips.add("127.0.0.1")
     return list(ips)
