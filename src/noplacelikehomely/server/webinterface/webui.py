@@ -191,6 +191,12 @@ def home():
                     }
                 }
 
+                // Trigger share immediately when text is pasted
+                document.getElementById('clipboard').addEventListener('paste', () => {
+                    // Delay slightly to capture pasted content
+                    setTimeout(shareClipboard, 50);
+                });
+
                 async function uploadFiles() {
                     const input = document.getElementById('fileInput');
                     const files = input.files;

@@ -19,7 +19,14 @@ def clipboard():
     global CLIPBOARD
     if request.method == "POST":
         data = request.get_json()
-        CLIPBOARD = data.get("text", "")
+        text = data.get("text", "")
+        CLIPBOARD = text
+        try:
+            import pyperclip
+            pyperclip.copy(text)  # Mirror shared clipboard to server system clipboard
+        except ImportError:
+            # pyperclip not installed; skipping system clipboard update
+            pass
         return jsonify({"status": "success"}), 200
     return jsonify({"text": CLIPBOARD})
 
