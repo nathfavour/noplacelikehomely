@@ -1,7 +1,7 @@
 # noplacelikehomely 🚀💻
 
 ## Short Description
-noplacelikehomely is your virtual distributed operating system for effortlessly sharing clipboard data, files, music, and more across devices—wirelessly and seamlessly! 🌐✨
+noplacelikehomely is your virtual distributed operating system for effortlessly streaming clipboard data, files, music, and more across devices—wirelessly and seamlessly! 🌐✨
 
 ## Long Description
 Welcome to **noplacelikehomely** – a cutting-edge, animated, and interconnected platform designed to empower you with a distributed operating system that unites all your devices. Imagine sharing everything from text snippets, files, and your favorite tunes to computational and network resources—instantly and wirelessly! 🎶🖥️📁
