@@ -1,7 +1,6 @@
 import socket
 import logging
 import qrcode_terminal
-import netifaces
 from flask import Flask, redirect
 
 from noplacelikehomely.server.webinterface.webinterface import api_bp
@@ -28,26 +27,27 @@ def get_all_ips():
     """Get all valid IPv4 addresses including local network IPs."""
     ips = set()
     
-    # Get all network interfaces
-    for interface in netifaces.interfaces():
-        try:
-            # Get IPv4 addresses for this interface
-            ifaddresses = netifaces.ifaddresses(interface)
-            if netifaces.AF_INET in ifaddresses:
-                for addr in ifaddresses[netifaces.AF_INET]:
-                    ip = addr['addr']
-                    # Only add non-loopback IPs
-                    if not ip.startswith('127.'):
-                        ips.add(ip)
-        except Exception as e:
-            logging.warning(f"Error getting IP for interface {interface}: {e}")
+    try:
+        # Get hostname-based IP
+        hostname_ip = socket.gethostbyname(socket.gethostname())
+        if not hostname_ip.startswith('127.'):
+            ips.add(hostname_ip)
+            
+        # Try to get additional IPs by creating a temporary socket
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # We don't actually connect, just use this to get local IP
+            s.connect(('8.8.8.8', 80))
+            local_ip = s.getsockname()[0]
+            if not local_ip.startswith('127.'):
+                ips.add(local_ip)
+    except Exception as e:
+        logging.warning(f"Error getting IP addresses: {e}")
     
-    # Always include localhost last
+    # Always include localhost
     ips.add('127.0.0.1')
     
     # Sort IPs to prioritize local network addresses
     return sorted(list(ips), key=lambda x: (
-        # Priority order: 192.168.x.x first, then 10.x.x.x, then others
         (0 if x.startswith('192.168.') else
          1 if x.startswith('10.') else
          2 if x.startswith('172.') else 3,
