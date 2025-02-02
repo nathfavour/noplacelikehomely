@@ -10,6 +10,14 @@ app = Flask(__name__)
 app.register_blueprint(api_bp)
 app.register_blueprint(ui_bp)
 
+# Apply secure settings for a localserver environment
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    REMEMBER_COOKIE_HTTPONLY=True,
+    # Add any additional secure settings as needed
+)
+
 @app.route("/")
 def index():
     # Redirect root to the UI
@@ -35,7 +43,9 @@ def run_server(host='0.0.0.0', port=8000):
         logging.info("Server interface available at %s", url)
         print("Scan this QR code for:", url)
         qrcode_terminal.draw(url)
+
     try:
+        # Running without SSL context for local server; secure settings are applied via app.config
         app.run(host=host, port=port)
     except Exception as e:
         logging.exception("Server encountered an error:")
