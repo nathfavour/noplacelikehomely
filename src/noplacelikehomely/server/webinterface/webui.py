@@ -11,71 +11,151 @@ def home():
             <title>noplacelike</title>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src="https://cdn.tailwindcss.com"></script>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+            <style>
+                /* Reset and base styles */
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: system-ui, -apple-system, sans-serif;
+                    background: #f5f5f5;
+                    color: #333;
+                    line-height: 1.5;
+                }
+
+                /* Layout */
+                .navbar {
+                    background: white;
+                    padding: 1rem;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+
+                .container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 1rem;
+                }
+
+                .grid {
+                    display: grid;
+                    gap: 1rem;
+                    margin: 1rem 0;
+                }
+
+                @media (min-width: 768px) {
+                    .grid { grid-template-columns: 1fr 1fr; }
+                }
+
+                /* Cards */
+                .card {
+                    background: white;
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+
+                /* Form elements */
+                .textarea {
+                    width: 100%;
+                    height: 8rem;
+                    padding: 0.5rem;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    margin: 0.5rem 0;
+                    font-family: inherit;
+                }
+
+                .button {
+                    background: #4444ff;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                }
+
+                .button:hover {
+                    background: #3333dd;
+                }
+
+                /* File upload area */
+                .upload-area {
+                    border: 2px dashed #ddd;
+                    border-radius: 4px;
+                    padding: 2rem;
+                    text-align: center;
+                }
+
+                /* File list */
+                .file-list {
+                    margin-top: 1rem;
+                }
+
+                .file-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.75rem 0;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .file-item:last-child {
+                    border-bottom: none;
+                }
+
+                .link-button {
+                    color: #4444ff;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+
+                .link-button:hover {
+                    text-decoration: underline;
+                }
+            </style>
         </head>
-        <body class="bg-gray-50 font-[Inter]">
-            <div class="min-h-screen">
-                <!-- Navbar -->
-                <nav class="bg-white shadow-sm">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex justify-between h-16">
-                            <div class="flex-shrink-0 flex items-center">
-                                <h1 class="text-2xl font-semibold text-gray-900">noplacelike</h1>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
+        <body>
+            <nav class="navbar">
+                <div class="container">
+                    <h1 style="font-size: 1.5rem; font-weight: 600;">noplacelike</h1>
+                </div>
+            </nav>
 
-                <!-- Main Content -->
-                <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <!-- Feature Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Clipboard Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900">Clipboard Sharing</h3>
-                                <div class="mt-4">
-                                    <textarea id="clipboard" 
-                                            class="w-full h-32 p-2 border rounded-md"
-                                            placeholder="Paste text here to share..."></textarea>
-                                    <button onclick="shareClipboard()"
-                                            class="mt-3 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">
-                                        Share Clipboard
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- File Sharing Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900">File Sharing</h3>
-                                <div class="mt-4">
-                                    <div class="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
-                                        <input type="file" id="fileInput" class="hidden" multiple>
-                                        <button onclick="document.getElementById('fileInput').click()"
-                                                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">
-                                            Select Files
-                                        </button>
-                                        <p class="mt-2 text-sm text-gray-600">or drag and drop files here</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <main class="container">
+                <div class="grid">
+                    <!-- Clipboard Card -->
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Clipboard Sharing</h3>
+                        <textarea id="clipboard" class="textarea" 
+                                placeholder="Paste text here to share..."></textarea>
+                        <button onclick="shareClipboard()" class="button">
+                            Share Clipboard
+                        </button>
                     </div>
 
-                    <!-- File List -->
-                    <div class="mt-6 bg-white shadow rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900">Shared Files</h3>
-                            <div id="fileList" class="mt-4 divide-y divide-gray-200">
-                                <!-- Files will be listed here dynamically -->
-                            </div>
+                    <!-- File Sharing Card -->
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">File Sharing</h3>
+                        <div class="upload-area">
+                            <input type="file" id="fileInput" style="display: none;" multiple>
+                            <button onclick="document.getElementById('fileInput').click()" 
+                                    class="button">
+                                Select Files
+                            </button>
+                            <p style="margin-top: 0.5rem; color: #666;">
+                                or drag and drop files here
+                            </p>
                         </div>
                     </div>
-                </main>
-            </div>
+                </div>
+
+                <!-- File List -->
+                <div class="card">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Shared Files</h3>
+                    <div id="fileList" class="file-list">
+                        <!-- Files will be listed here dynamically -->
+                    </div>
+                </div>
+            </main>
 
             <script>
                 // Fetch and display files
@@ -84,12 +164,10 @@ def home():
                     const data = await response.json();
                     const fileList = document.getElementById('fileList');
                     fileList.innerHTML = data.files.map(file => `
-                        <div class="py-4 flex justify-between items-center">
-                            <span class="text-gray-900">${file}</span>
-                            <button onclick="downloadFile('${file}')"
-                                    class="text-indigo-600 hover:text-indigo-900">
-                                Download
-                            </button>
+                        <div class="file-item">
+                            <span>${file}</span>
+                            <button onclick="downloadFile('${file}')" 
+                                    class="link-button">Download</button>
                         </div>
                     `).join('');
                 }
@@ -97,12 +175,16 @@ def home():
                 // Share clipboard content
                 async function shareClipboard() {
                     const text = document.getElementById('clipboard').value;
-                    await fetch('/api/clipboard', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({text})
-                    });
-                    alert('Clipboard shared successfully!');
+                    try {
+                        await fetch('/api/clipboard', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({text})
+                        });
+                        alert('Clipboard shared successfully!');
+                    } catch (error) {
+                        alert('Failed to share clipboard: ' + error.message);
+                    }
                 }
 
                 // Initialize
