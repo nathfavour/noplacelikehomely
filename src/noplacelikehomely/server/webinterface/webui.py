@@ -161,14 +161,12 @@ def home():
                     <!-- Updated Audio Streaming Card -->
                     <div class="card">
                         <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Audio Streaming</h3>
-                        <!-- New Streaming Directory/File Selection Section -->
+                        <!-- Streaming Source Selection Section with clear button -->
                         <div style="margin-bottom:1rem; border:1px solid #ddd; border-radius:4px; padding:1rem;">
                             <h4>Streaming Source Selection</h4>
-                            <!-- Button to trigger directory selection -->
                             <button class="button" onclick="triggerDirSelect()">Add Streaming Directory</button>
-                            <!-- Hidden file input to select directories (webkitdirectory, multiple) -->
+                            <button class="button" onclick="clearStreamingDirectories()" style="margin-left:1rem;">Clear Streaming Directories</button>
                             <input type="file" id="dirSelector" webkitdirectory directory multiple style="display: none;" onchange="handleDirSelect(this.files)">
-                            <!-- Display selected directories -->
                             <div id="selectedDirs" style="margin-top:0.5rem; font-size:0.9rem; color:#555;"></div>
                         </div>
                         <!-- Existing audio player and audio files listing -->
@@ -277,7 +275,7 @@ def home():
                         // data.files is an object: {folder1: [files], folder2: [files], ...}
                         for (const [dir, files] of Object.entries(data.files)) {
                             html += `<h5>Directory: ${dir}</h5>`;
-                            if (files.length) {
+                            if (files && files.length) {
                                 html += `<table>
                                             <tr><th>File</th><th>Action</th></tr>`;
                                 files.forEach(file => {
@@ -304,19 +302,39 @@ def home():
                     audio.play();
                 }
 
+                // New function: clear all streaming directories
+                async function clearStreamingDirectories() {
+                    try {
+                        // Get current directories via admin GET endpoint:
+                        const res = await fetch('/admin/dirs');
+                        const data = await res.json();
+                        const dirs = data.dirs || [];
+                        // Delete each directory from the config
+                        for (let dir of dirs) {
+                            await fetch('/admin/dirs', {
+                                method: 'DELETE',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({dir})
+                            });
+                        }
+                        document.getElementById('selectedDirs').textContent = "No streaming directories selected.";
+                        fetchAudioFiles(); // Refresh audio files list after clearing
+                    } catch (error) {
+                        console.error('Error clearing streaming directories:', error);
+                    }
+                }
+
                 // New functions for streaming directory selection
                 function triggerDirSelect() {
                     document.getElementById('dirSelector').click();
                 }
 
                 function handleDirSelect(files) {
-                    // Extract unique directory names from selected files using the relative path (nonstandard but works in supported browsers)
                     let dirSet = new Set();
                     for (let file of files) {
                         if (file.webkitRelativePath) {
                             let parts = file.webkitRelativePath.split("/");
                             if (parts.length > 1) {
-                                // Use the first part as the directory name
                                 dirSet.add(parts[0]);
                             }
                         }
@@ -348,7 +366,7 @@ def home():
                     for (let d of dirs) {
                         await addDirectoryAPI(d);
                     }
-                    fetchAudioFiles(); // Refresh available audio files after adding directories
+                    fetchAudioFiles();
                 }
 
                 // Initialize
