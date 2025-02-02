@@ -1,4 +1,5 @@
 # noplacelikehomely 🚀💻
+The world doesn't have to be physically connected...yunno 
 
 ## Short Description
 noplacelikehomely is your virtual distributed operating system for effortlessly streaming clipboard data, files, music, and more across devices—wirelessly and seamlessly! 🌐✨
