@@ -1,14 +1,17 @@
 import os
 from flask import Blueprint, jsonify, request, send_from_directory
 from werkzeug.utils import secure_filename
+from noplacelikehomely.config import load_config  # New import
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 # Global in-memory clipboard storage
 CLIPBOARD = ""
 
-# Configure file upload folder (ensure this folder exists in your project root)
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+# Load config and set upload folder from config (expanding '~')
+config = load_config()
+UPLOAD_FOLDER = os.path.expanduser(config.get("upload_folder", "~/noplacelike/uploads"))
+# Optionally, similar logic could be applied for a downloads folder if needed.
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @api_bp.route("/clipboard", methods=["GET", "POST"])

@@ -11,6 +11,7 @@ import logging
 import sys
 
 from noplacelikehomely import __version__
+from noplacelikehomely.config import update_config  # New import
 
 __author__ = "nathfavour"
 __copyright__ = "nathfavour"
@@ -55,6 +56,11 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action="store_const", const=logging.DEBUG
     )
+    # New CLI options to override config
+    parser.add_argument("--upload-folder", type=str,
+                        help="Folder path for uploads (overrides config)")
+    parser.add_argument("--download-folder", type=str,
+                        help="Folder path for downloads (overrides config)")
     # Set default loglevel if not specified
     parser.set_defaults(loglevel=logging.WARNING)
     return parser.parse_args(args)
@@ -86,6 +92,14 @@ def main(args):
           (for example  ``["--verbose", "42"]``).
     """
     args = parse_args(args)
+    # Update config if user provides folder overrides
+    overrides = {}
+    if args.upload_folder:
+        overrides["upload_folder"] = args.upload_folder
+    if args.download_folder:
+        overrides["download_folder"] = args.download_folder
+    if overrides:
+        update_config(**overrides)
     setup_logging(args.loglevel)
     _logger.debug("Initializing noplacelike server...")
     start_server(args.host, args.port)

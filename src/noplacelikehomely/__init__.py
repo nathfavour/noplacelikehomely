@@ -6,6 +6,8 @@ if sys.version_info[:2] >= (3, 8):
 else:
     from importlib_metadata import PackageNotFoundError, version  # pragma: no cover
 
+from .config import update_config, load_config, save_config
+
 try:
     # Change here if project is renamed and does not equal the package name
     dist_name = __name__
