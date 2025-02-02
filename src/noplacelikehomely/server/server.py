@@ -3,7 +3,8 @@ import logging
 import qrcode_terminal
 from flask import Flask, redirect
 
-from noplacelikehomely.server.webinterface.webinterface import api_bp, ui_bp
+from noplacelikehomely.server.webinterface.webinterface import api_bp
+from noplacelikehomely.server.webinterface.webui import ui_bp  # Modified import: get ui_bp from webui.py
 from noplacelikehomely.server.webinterface.streaming import stream_bp  # New import
 
 app = Flask(__name__)
