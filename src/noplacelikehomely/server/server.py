@@ -6,11 +6,13 @@ from flask import Flask, redirect
 from noplacelikehomely.server.webinterface.webinterface import api_bp
 from noplacelikehomely.server.webinterface.webui import ui_bp  # Modified import: get ui_bp from webui.py
 from noplacelikehomely.server.webinterface.streaming import stream_bp  # New import
+from noplacelikehomely.server.webinterface.admin import admin_bp
 
 app = Flask(__name__)
 app.register_blueprint(api_bp)
 app.register_blueprint(ui_bp)
 app.register_blueprint(stream_bp)  # Register streaming endpoints
+app.register_blueprint(admin_bp)  # Register admin blueprint
 
 # Apply secure settings for a localserver environment
 app.config.update(
