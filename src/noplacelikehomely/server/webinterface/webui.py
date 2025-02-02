@@ -164,9 +164,12 @@ def home():
                         <!-- Streaming Source Selection Section with clear button -->
                         <div style="margin-bottom:1rem; border:1px solid #ddd; border-radius:4px; padding:1rem;">
                             <h4>Streaming Source Selection</h4>
-                            <button class="button" onclick="triggerDirSelect()">Add Streaming Directory</button>
-                            <button class="button" onclick="clearStreamingDirectories()" style="margin-left:1rem;">Clear Streaming Directories</button>
-                            <input type="file" id="dirSelector" webkitdirectory directory multiple style="display: none;" onchange="handleDirSelect(this.files)">
+                            <!-- New text input for absolute directory path -->
+                            <div style="margin-bottom:0.5rem;">
+                                <input type="text" id="streamDirInput" placeholder="Enter absolute directory path" style="width:70%; padding:0.3rem;">
+                                <button class="button" onclick="submitStreamDir()" style="margin-left:0.5rem;">Add Directory</button>
+                            </div>
+                            <button class="button" onclick="clearStreamingDirectories()">Clear Streaming Directories</button>
                             <div id="selectedDirs" style="margin-top:0.5rem; font-size:0.9rem; color:#555;"></div>
                         </div>
                         <!-- Existing audio player and audio files listing -->
@@ -302,6 +305,30 @@ def home():
                     audio.play();
                 }
 
+                // New function: submit directory from text input
+                async function submitStreamDir() {
+                    const input = document.getElementById('streamDirInput');
+                    const dir = input.value.trim();
+                    if (!dir) return;
+                    await addDirectoryAPI(dir);
+                    input.value = '';
+                    updateSelectedDirs(dir, true);
+                    fetchAudioFiles();
+                }
+
+                // Show newly added directories in the UI (simple append here)
+                function updateSelectedDirs(newDir, append) {
+                    const display = document.getElementById('selectedDirs');
+                    let current = display.textContent || "";
+                    if (append) {
+                        if (current === "" || current.includes("No streaming directories")) {
+                            display.textContent = "Selected: " + newDir;
+                        } else {
+                            display.textContent = current + ", " + newDir;
+                        }
+                    }
+                }
+
                 // New function: clear all streaming directories
                 async function clearStreamingDirectories() {
                     try {
@@ -324,28 +351,7 @@ def home():
                     }
                 }
 
-                // New functions for streaming directory selection
-                function triggerDirSelect() {
-                    document.getElementById('dirSelector').click();
-                }
-
-                function handleDirSelect(files) {
-                    let dirSet = new Set();
-                    for (let file of files) {
-                        if (file.webkitRelativePath) {
-                            let parts = file.webkitRelativePath.split("/");
-                            if (parts.length > 1) {
-                                dirSet.add(parts[0]);
-                            }
-                        }
-                    }
-                    let dirs = Array.from(dirSet);
-                    if (dirs.length) {
-                        document.getElementById('selectedDirs').textContent = "Selected: " + dirs.join(", ");
-                        updateStreamingDirectories(dirs);
-                    }
-                }
-
+                // New function to add a directory via the admin API
                 async function addDirectoryAPI(dir) {
                     try {
                         const res = await fetch('/admin/dirs', {
@@ -360,13 +366,6 @@ def home():
                     } catch(e) {
                         console.error(e);
                     }
-                }
-
-                async function updateStreamingDirectories(dirs) {
-                    for (let d of dirs) {
-                        await addDirectoryAPI(d);
-                    }
-                    fetchAudioFiles();
                 }
 
                 // Initialize
