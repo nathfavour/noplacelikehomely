@@ -146,6 +146,13 @@ def home():
                             </p>
                         </div>
                     </div>
+
+                    <!-- Server Clipboard Card -->
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Server Clipboard</h3>
+                        <div id="serverClipboard" class="textarea" style="overflow:auto; background:#f0f0f0;"></div>
+                        <button onclick="fetchServerClipboard()" class="button" style="margin-top:0.5rem;">Fetch Server Clipboard</button>
+                    </div>
                 </div>
 
                 <!-- File List -->
@@ -196,6 +203,17 @@ def home():
                     // Delay slightly to capture pasted content
                     setTimeout(shareClipboard, 50);
                 });
+
+                // Fetch server clipboard content
+                async function fetchServerClipboard() {
+                    try {
+                        const response = await fetch('/api/clipboard');
+                        const data = await response.json();
+                        document.getElementById('serverClipboard').textContent = data.text || '';
+                    } catch (error) {
+                        alert('Failed to fetch server clipboard: ' + error.message);
+                    }
+                }
 
                 async function uploadFiles() {
                     const input = document.getElementById('fileInput');
