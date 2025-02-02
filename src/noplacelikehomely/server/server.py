@@ -3,12 +3,13 @@ import logging
 import qrcode_terminal
 from flask import Flask, redirect
 
-from noplacelikehomely.server.webinterface.webinterface import api_bp
-from noplacelikehomely.server.webinterface.webui import ui_bp
+from noplacelikehomely.server.webinterface.webinterface import api_bp, ui_bp
+from noplacelikehomely.server.webinterface.streaming import stream_bp  # New import
 
 app = Flask(__name__)
 app.register_blueprint(api_bp)
 app.register_blueprint(ui_bp)
+app.register_blueprint(stream_bp)  # Register streaming endpoints
 
 # Apply secure settings for a localserver environment
 app.config.update(

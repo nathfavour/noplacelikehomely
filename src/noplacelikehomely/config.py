@@ -4,7 +4,8 @@ import os
 CONFIG_PATH = os.path.expanduser("~/.noplacelikeconfig.json")
 DEFAULT_CONFIG = {
     "upload_folder": "~/noplacelike/uploads",
-    "download_folder": "~/Downloads"
+    "download_folder": "~/Downloads",
+    "audio_folder": "/media/nathfavour/nathfavour/musics/ytdlp/ytdlp"  # New default for audio streaming
 }
 
 def load_config():
