@@ -71,10 +71,9 @@ def setup_logging(loglevel):
     )
 
 def start_server(host, port):
-    """Stub for starting the communications server."""
-    print(f"Starting noplacelike communications server on {host}:{port}")
-    _logger.info("Server started. (Implement your logic here.)")
-    # ...placeholder for actual server logic...
+    """Start the communications server using the robust server module."""
+    from noplacelikehomely.server.server import run_server
+    run_server(host, port)
 
 def main(args):
     """Wrapper allowing :func:`start_server` to be called with string arguments in a CLI fashion
